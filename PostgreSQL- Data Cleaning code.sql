@@ -75,5 +75,66 @@ SET h.propertyaddress = Table3.propertyaddress
 WHERE h.propertyaddress = '';
 
  --------------------------------------------------------------------------------------------------------------------------
+--Splitting PropertyAddress on Address and City
+
+Postgres:
+ 
+SELECT SPLIT_PART("PropertyAddress", ',', 1) as "Address",
+       SPLIT_PART("PropertyAddress", ',', 2) as "City"
+FROM housing_data.housing
+
+ 
+-- creating new columns
+alter TABLE housing_data.housing
+add column "Address" varchar(255)
+
+alter TABLE housing_data.housing
+add column "City" varchar(255)
 
 
+update housing_data.housing
+set "Address" = SPLIT_PART("PropertyAddress", ',', 1)
+
+update housing_data.housing
+set "City" = SPLIT_PART("PropertyAddress", ',', 2)
+
+ 
+-- spliting OwnerAddress column:
+ 
+SELECT SPLIT_PART("OwnerAddress", ',', 1) as "OwnerAddressConverted",
+       SPLIT_PART("OwnerAddress", ',', 2) as "OwnerCityConverted",
+       SPLIT_PART("OwnerAddress", ',', 3) as "OwnerStateConverted"
+FROM housing_data.housing
+
+--Creating columns:
+ 
+alter TABLE housing_data.housing
+add column "OwnerAddressConverted" varchar(255)
+
+alter TABLE housing_data.housing
+add column "OwnerCityConverted" varchar(255)
+
+alter TABLE housing_data.housing
+add column "OwnerStateConverted" varchar(255)
+
+-- Filling new columns:
+ 
+update housing_data.housing
+set "OwnerAddressConverted" = SPLIT_PART("OwnerAddress", ',', 1)
+
+update housing_data.housing
+set "OwnerCityConverted" = SPLIT_PART("OwnerAddress", ',', 2)
+
+update housing_data.housing
+set "OwnerStateConverted" = SPLIT_PART("OwnerAddress", ',', 3)
+
+
+ 
+Alternative solution in mysql to split the column PropertyAddress:
+
+SELECT SUBSTRING_INDEX(propertyaddress, ',', 1) AS address,
+    SUBSTRING_INDEX(SUBSTRING_INDEX(propertyaddress, ',', 2), ',', -1) as city
+FROM portfolio.housing 
+
+
+ --------------------------------------------------------------------------------------------------------------------------
