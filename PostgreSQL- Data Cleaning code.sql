@@ -44,6 +44,19 @@ WHERE housing_data.housing."ParcelID" = Table3."ParcelID"
 AND housing_data.housing."PropertyAddress" = ''
 
 
+
+#Alternative solution made in Mysql:
+ 
+UPDATE portfolio.housing AS h
+JOIN (
+    SELECT a.parcelid, a.propertyaddress
+    FROM portfolio.housing a
+    LEFT JOIN portfolio.housing b ON a.parcelid = b.parcelid AND b.propertyaddress = ''
+    WHERE a.propertyaddress != ''
+) AS Table3 ON h.parcelid = Table3.parcelid
+SET h.propertyaddress = Table3.propertyaddress
+WHERE h.propertyaddress = ''
+
  --------------------------------------------------------------------------------------------------------------------------
 
 
