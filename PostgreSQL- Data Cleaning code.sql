@@ -51,7 +51,7 @@ UPDATE portfolio.housing AS h
 JOIN (
     SELECT a.parcelid, a.propertyaddress
     FROM portfolio.housing a
-    LEFT JOIN portfolio.housing b ON a.parcelid = b.parcelid AND b.propertyaddress = ''
+    LEFT JOIN portfolio.housing b ON a.parcelid = b.parcelid
     WHERE a.propertyaddress != ''
 ) AS Table3 ON h.parcelid = Table3.parcelid
 SET h.propertyaddress = Table3.propertyaddress
