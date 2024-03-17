@@ -138,3 +138,67 @@ FROM portfolio.housing
 
 
  --------------------------------------------------------------------------------------------------------------------------
+
+--3 changing y to yes and n to no in SoldAsVacant column
+
+select case 
+	when "SoldAsVacant"='Y' then 'Yes'
+	when "SoldAsVacant"='N' then 'No'
+	else "SoldAsVacant" end as "SoldAsVacantConverted"
+from housing_data.housing
+
+
+
+--Alternatively in mysql i can write if statement:
+
+select if(SoldAsVacant='Y',"YES",if(SoldAsVacant="N","No",SoldAsVacant)) as "SoldAsVacantConverted"
+from portfolio.housing 
+
+
+ --------------------------------------------------------------------------------------------------------------------------
+
+-- Remove Duplicates
+
+WITH DuplicatesCTE AS(
+Select *,
+	ROW_NUMBER() OVER (
+	PARTITION BY "ParcelID",
+				"PropertyAddress",
+				"SalePrice",
+				"SaleDate",
+				"LegalReference"
+				 ORDER BY
+					"UniqueID"
+					) as "dup_num"
+
+From housing_data.housing 
+)
+
+
+
+Delete
+From housing_data.housing
+Where "UniqueID" in(
+	SELECT "UniqueID"
+    FROM DuplicatesCTE
+    WHERE "dup_num" > 1)
+
+    
+    
+ select *
+  from DuplicatesCTE
+  where "dup_num" > 1
+
+
+ --------------------------------------------------------------------------------------------------------------------------
+
+-- Delete Unused Columns
+
+
+ALTER TABLE housing_data.housing
+DROP COLUMN "OwnerAddress",
+DROP COLUMN "TaxDistrict",
+DROP COLUMN "PropertyAddress",
+DROP COLUMN "SaleDate";
+
+
